@@ -1,0 +1,21 @@
+language: generic
+sudo: required
+services:
+ - docker
+
+before_install:
+ - docker build -t briksa/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+ - docker run -e CI=true briksa/react-test npm test
+
+after_success:
+ - docker build -t briksa/multi-client ./client
+ - docker build -t briksa/multi-nginx ./nginx
+ - docker build -t briksa/multi-server ./server
+ - docker build -t briksa/multi-worker ./worker
+ - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+ - docker push briksa/multi-client
+ - docker push briksa/multi-nginx
+ - docker push briksa/multi-server
+ - docker push briksa/multi-worker
