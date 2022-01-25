@@ -1,0 +1,6 @@
+from node:16-alpine3.14
+workdir '/app'
+copy ./package.json ./
+run npm install
+copy . .
+cmd ["npm", "run", "start"]
